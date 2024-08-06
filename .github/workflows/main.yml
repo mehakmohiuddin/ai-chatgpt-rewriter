@@ -4,27 +4,25 @@ on:
       - master
 name: 🚀 Deploy website on push
 jobs:
-  build:
+  web-deploy:
+    name: 🎉 Deploy
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18, 20, 22]  
+    timeout-minutes: 40  # Increase timeout to 30 minutes
     steps:
     - name: 🚚 Get latest code
-      uses: actions/checkout@v4  # Updated to the latest version
+      uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 20.14.0
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: '20.14.0'
       
     - name: 🔨 Build Project
       run: |
-        npm install
-        npm run build
+        npm ci --verbose  # Clean install with verbose logging
+        npm run build --verbose  # Build with verbose logging
     
     - name: 📂 Sync files
-      if: matrix.node-version == '16'
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: ${{ secrets.FTP_HOST }}
