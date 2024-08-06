@@ -1,0 +1,35 @@
+on: 
+  push:
+    branches:
+      - master
+name: 🚀 Deploy website on push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16, 18, 20]  
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v4  # Updated to the latest version
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+      
+    - name: 🔨 Build Project
+      run: |
+        npm install
+        npm run build
+    
+    - name: 📂 Sync files
+      if: matrix.node-version == '16'
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.FTP_HOST }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        port: ${{ secrets.FTP_PORT }}
+        local-dir: .  # Upload the entire project directory
+        server-dir: /home/buyripie/aichatgptrewriter.com
