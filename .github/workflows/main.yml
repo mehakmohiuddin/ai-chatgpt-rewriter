@@ -7,7 +7,7 @@ jobs:
   web-deploy:
     name: 🎉 Deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 40  # Increase timeout to 30 minutes
+    timeout-minutes: 30
     steps:
     - name: 🚚 Get latest code
       uses: actions/checkout@v4
@@ -18,9 +18,11 @@ jobs:
         node-version: '20.14.0'
       
     - name: 🔨 Build Project
+      env:
+        OPENAI_API_KEY: ${{ secrets.NEXT_PUBLIC_OPENAI_API_KEY }}  # Add your secret here
       run: |
-        npm ci --verbose  # Clean install with verbose logging
-        npm run build --verbose  # Build with verbose logging
+        npm install
+        npm run build
     
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -29,5 +31,5 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         port: ${{ secrets.FTP_PORT }}
-        local-dir: .  # Upload the entire project directory
+        local-dir: .  
         server-dir: /home/buyripie/aichatgptrewriter.com
